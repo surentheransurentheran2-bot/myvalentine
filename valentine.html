@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Valentine 💖</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Comic Sans MS', cursive;
+    background:linear-gradient(135deg,#ff9ac9,#ffc1e3,#ffd6ec);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* CARD */
+.card{
+    background:rgba(255,255,255,0.4);
+    backdrop-filter:blur(15px);
+    width:95%;
+    max-width:420px;
+    padding:25px;
+    border-radius:30px;
+    box-shadow:0 20px 60px rgba(255,0,100,0.3);
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+/* IMAGE */
+.card img{
+    width:100%;
+    max-width:280px;
+    border-radius:20px;
+    margin:15px 0;
+    border:4px solid white;
+    box-shadow:0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* BUTTON */
+button{
+    background:linear-gradient(45deg,#ff4d6d,#ff85a2);
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:30px;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:10px;
+    width:100%;
+    max-width:260px;
+    transition:0.3s;
+    box-shadow:0 5px 15px rgba(255,0,100,0.4);
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 25px rgba(255,0,100,0.6);
+}
+
+/* QUIZ */
+.quiz{ display:none; }
+
+.question{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.options button{
+    width:100%;
+    margin:8px 0;
+}
+
+/* COUNTDOWN */
+.countdown{
+    font-size:55px;
+    font-weight:bold;
+    color:#ff2e63;
+}
+
+/* HEART RAIN */
+.heart{
+    position:fixed;
+    top:-20px;
+    font-size:22px;
+    animation:fall linear forwards;
+    pointer-events:none;
+    z-index:0;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh);
+        opacity:0;
+    }
+}
+
+/* EMOJI */
+.emoji{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0);
+    font-size:90px;
+    animation:pop 0.6s ease forwards;
+    z-index:9999;
+}
+
+@keyframes pop{
+    0%{transform:translate(-50%,-50%) scale(0);}
+    50%{transform:translate(-50%,-50%) scale(1.4);}
+    100%{transform:translate(-50%,-50%) scale(1);}
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div id="cover">
+    <h2>Happy Valentine My Love 💖</h2>
+    <p>Even though we are miles apart,<br>my heart belongs to you always.</p>
+    <img src="suren011.jpeg">
+
+    <!-- BUTTON TAMBAHAN -->
+    <button onclick="showLoveMessage()">💌 From My Heart</button>
+
+    <button onclick="startQuiz()">Start Quiz 💕</button>
+</div>
+
+<div id="quiz" class="quiz">
+    <div class="countdown" id="countdown"></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+</div>
+
+</div>
+
+<script>
+
+let hisName="Mr. Balan";
+
+/* HEART RAIN */
+let heartInterval=setInterval(createHeart,500);
+
+function createHeart(){
+    let heart=document.createElement("div");
+    heart.className="heart";
+    let hearts=["💖","💕","💘","💝","💞"];
+    heart.innerHTML=hearts[Math.floor(Math.random()*hearts.length)];
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.animationDuration=(Math.random()*3+3)+"s";
+    document.body.appendChild(heart);
+    setTimeout(()=>{heart.remove();},6000);
+}
+
+/* QUIZ DATA */
+const questions=[
+{
+q:"1. In which month did we first meet?",
+options:["March","April","May"],
+answer:1
+},
+{
+q:"2. What is my favorite animal?",
+options:["Cat","Rabbit","Dog"],
+answer:2
+},
+{
+q:"3. Where did we first meet?",
+options:["Instagram","Facebook","WhatsApp"],
+answer:1
+},
+{
+q:"4. What date did we officially start dating?",
+options:["28 April 2023","28 April 2024","30 April 2024"],
+answer:1
+},
+{
+q:"5. When is my birthday?",
+options:["24 June","12 July","5 May"],
+answer:0
+}
+];
+
+let current=0;
+let correctCount=0;
+
+function startQuiz(){
+    clearInterval(heartInterval);
+    document.getElementById("cover").style.display="none";
+    document.getElementById("quiz").style.display="block";
+    startCountdown();
+}
+
+function startCountdown(){
+    let count=3;
+    let cd=document.getElementById("countdown");
+    cd.innerText=count;
+
+    let interval=setInterval(()=>{
+        count--;
+        if(count>0){
+            cd.innerText=count;
+        }else{
+            clearInterval(interval);
+            cd.innerText="💕";
+            setTimeout(()=>{
+                cd.style.display="none";
+                showQuestion();
+            },800);
+        }
+    },1000);
+}
+
+function showQuestion(){
+    let q=document.getElementById("question");
+    let o=document.getElementById("options");
+
+    q.innerText=questions[current].q;
+
+    let html="";
+    questions[current].options.forEach((opt,i)=>{
+        html+=`<button onclick="selectAnswer(${i})">${opt}</button>`;
+    });
+
+    o.innerHTML=html;
+}
+
+function selectAnswer(index){
+
+    let emoji=document.createElement("div");
+    emoji.className="emoji";
+
+    if(index===questions[current].answer){
+        correctCount++;
+        emoji.innerHTML="😘💋";
+    }else{
+        emoji.innerHTML="😡💢";
+    }
+
+    document.body.appendChild(emoji);
+
+    setTimeout(()=>{
+        emoji.remove();
+        current++;
+        if(current<questions.length){
+            showQuestion();
+        }else{
+            showResult();
+        }
+    },1000);
+}
+
+function showResult(){
+    let percent=Math.round((correctCount/questions.length)*100);
+
+    let message="";
+    let emoji="💖";
+
+    if(percent===100){
+        message="Perfect score! You really know my heart 💕";
+        emoji="💞💘";
+        heartInterval=setInterval(createHeart,400);
+    }else if(percent>=60){
+        message="Not bad... but you still need to love me more 😘";
+        emoji="💕";
+    }else{
+        message="Oh nooo... you must retake the love test 😜";
+        emoji="💔";
+    }
+
+    document.getElementById("quiz").innerHTML=
+    `
+    <div style="animation:fadeIn 0.8s ease;">
+        <h2>For You, ${hisName} ${emoji}</h2>
+        <img src="surenn1.jpg">
+        <h1 style="font-size:50px;color:#ff2e63;">${percent}%</h1>
+        <p style="font-size:18px;">${message}</p>
+        <button onclick="location.reload()">Play Again 💕</button>
+    </div>
+    `;
+}
+
+/* MESSAGE FROM HEART */
+function showLoveMessage(){
+    document.getElementById("cover").innerHTML=`
+        <h2>For You My Love 💖</h2>
+        <img src="suren011.jpeg">
+        <p style="font-size:18px; line-height:1.6;">
+            Even though we are far apart,<br><br>
+            my heart still chooses you every single day 💕<br><br>
+            You are my comfort,<br>
+            my happiness,<br>
+            and my forever person 💘<br><br>
+            No distance can change what I feel for you.<br>
+            I love you always 💖
+        </p>
+        <button onclick="location.reload()">Back 💗</button>
+    `;
+}
+
+</script>
+
+</body>
+</html>
